@@ -1,5 +1,6 @@
 import express from "express"; // Importando o express
 import routes from "./routes"; // Importando o routes
+import { resolve } from "path"; // Importando o resolve do path (url das imagens) 
 
 import './database'
 
@@ -17,6 +18,10 @@ class App {
   middlewares() {
     // Criado o método dos middlewares.
     this.app.use(express.json()); // Indicamos que o middleware utilizará json.
+    this.app.use(
+      '/product-file',
+      express.static(resolve(__dirname, '..', 'uploads'))
+    )
   }
 
   routes() {
