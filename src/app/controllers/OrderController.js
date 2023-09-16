@@ -31,13 +31,13 @@ class OrderController{
       where: {
         id: productsId, //Onde os produtos correspondem ao id de produto enviado.
       },
-      //include: [ //Include como array para buscar as informações de Categorias
-       // {
-       //   model: Category, //Acessamos o model de Categorias para buscar a categoria desejada.
-        //  as: 'category', //Importamos como category
-          //attributes: ['name'], //Indicamos o atributo desejado
-        //},
-      //],
+      include: [ //Include como array para buscar as informações de Categorias
+        {
+          model: Category, //Acessamos o model de Categorias para buscar a categoria desejada.
+          as: 'category', //Importamos como category
+          attributes: ['name'], //Indicamos o atributo desejado
+        },
+      ],
     })
 
     const editedProduct = updatedProducts.map( product =>{ //Criamos uma nova variável que pega as informações da variável anterior
@@ -49,7 +49,7 @@ class OrderController{
         id: product.id,
         name: product.name,
         price: product.price,
-        //category: product.category.name,
+        category: product.category.name,
         url: product.url,
         quantity: request.body.products[productIndex].quantity,
       }

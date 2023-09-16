@@ -1,5 +1,5 @@
 import Sequelize from 'sequelize'
-import mongoose from 'mongoose'
+import mongoose, { model } from 'mongoose'
 
 import User from '../app/models/User'
 import Product from '../app/models/Product'
@@ -19,16 +19,19 @@ class Database {
     init() {
         this.connection = new Sequelize(configDatabase)
         models.map((model) => model.init(this.connection))
+        .map(
+            (model) => model.associate && model.associate(this.connection.models)
+        )
 
     }
 
     mongo() {
         this.mongoConnection = mongoose.connect(
-            'mongodb://localhost:27017/codeburger'//,
-            //{
-            //    useNewUrlParse: true,
-            //    useUniFiedTopology: true,
-            //}
+            'mongodb://localhost:27017/codeburger',
+            {
+                useNewUrlParser: true,
+                useUniFiedTopology: true,
+            }
         )
     }
 }
