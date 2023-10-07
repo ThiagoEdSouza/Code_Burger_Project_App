@@ -1,6 +1,8 @@
 import * as Yup from 'yup'
 import Product from '../models/Product'
 import Category from '../models/Category'
+import Order  from '../schemas/Order'
+import User from '../models/User'
 
 
 class OrderController{
@@ -63,9 +65,48 @@ class OrderController{
         name: request.userName,
       },
       products: editedProduct,
+      status: 'Pedido Realizado',
     }
 
-    return response.status(201).json(editedProduct)
+    const orderResponse = await Order.create(order)
+
+    return response.status(201).json(orderResponse)
+  }
+
+  async index(request, response){
+    const orders = await Order.find()
+
+    return response.json(orders)
+  }
+
+  async update(request, response){
+    const schema = Yup.object().shape({
+      status: Yup.string().required(),
+    })
+    
+    try {
+      await schema.validateSync(request.body, { abortEarly: false}) //Operação abortEarly é para que o validador não pare no primeiro erro, mas indique todos.
+    } catch (err) {
+      return response.status(400).json({ error: err.errors })
+    }
+
+    const { admin: isAdmin } = await User.findByPk(request.userId)
+
+    if(!isAdmin){
+      return response.status(401).json({ error: 'User not authorized to perform the operation' })
+    }
+
+    const { id } = request.params
+    const { status } = request.body
+
+    try {
+      await Order.updateOne({ _id: id }, { status })
+    
+    }catch (error) {
+      return response.status(400).json({ error: error.message})
+    }
+
+    return response.json({ message: 'Status Updated Successfully.' })
   }
 
 }
